@@ -8,6 +8,8 @@ public class Terrain extends DrawableObject {
 	enum 	Direction 	{NORTH, SOUTH, EAST, WEST, NONE};
 	public 	Direction 	facing = Direction.NONE;
 	public 	char 		type;
+	public  Creature    occupant;
+	public  boolean     occupied = false;
 	
 	public Terrain(int x, int y) {
 		super(x, y);
@@ -42,6 +44,20 @@ public class Terrain extends DrawableObject {
 	
 	public void setType(char type) {
 		this.type = type;
+	}
+	
+	public void setOccupant(Creature occ) {
+		if(occupant != null) {
+			return;
+		} else {
+			occupant = occ;
+		}
+	}
+	
+	public Creature removeOccupant() {
+		Creature temp = occupant;
+		occupant = null;
+		return temp;
 	}
 	
 }

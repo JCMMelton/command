@@ -17,7 +17,8 @@ public class Player extends Creature  {
 		super(xInit, yInit);
 		setDimentions(Vals.GRID_SIZE, Vals.GRID_SIZE);
 		setRegion(new TextureRegion(new Texture("pc_test.tga"), 0, 0, 32, 32));
-		hands = new Array<Item>();
+		hands  = new Array<Item>();
+		health = 100;
 	}
 	
 	public void pickUpItem(Item item) {

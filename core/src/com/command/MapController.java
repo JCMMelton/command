@@ -26,19 +26,25 @@ public class MapController implements InputProcessor {
 	
 	public MapController() {
 		mapLoader 	= new MapLoader();
-		grid      	= new Grid(Vals.GRID_X_COUNT, Vals.GRID_Y_COUNT);
-		creatures 	= new Array<Creature>();
-		items 		= new Array<Item>();
-		pc 			= new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2);
-		NPC testNPC = new NPC(7,7);
-		creatures.add(testNPC);
-		grid.setSpace(7, 7, 1);
-		Item testItem = new Item(4, 10, new Texture("item_test.tga"));
-		items.add(testItem);
 		maps = new Array<MapInstance>();
 		maps.add(new MapInstance(mapIndex++, MapData.translate(MapData.randomMap())));
 		mapLoader.setMapData(maps.get(currentMap).mapData);
 		terrain   = mapLoader.generateTerrain();
+		
+		grid      	= new Grid(Vals.GRID_X_COUNT, Vals.GRID_Y_COUNT);
+		creatures 	= new Array<Creature>();
+		items 		= new Array<Item>();
+		pc 			= new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2);
+		
+		Monster testNPC = new Monster(7,7);
+		moveNPC(testNPC, 1, 1);
+		creatures.add(testNPC);
+		NPC nonOgre = new NPC(5,5);
+		moveNPC(nonOgre, 1, -1);
+		creatures.add(nonOgre);
+		
+		Item testItem = new Item(4, 10, new Texture("item_test.tga"));
+		items.add(testItem);
 		Array<TextureRegion> testBS = new Array<TextureRegion>();
 		testBS.add(new TextureRegion(new Texture("battle_test.tga"), 0, 0, 800, 600));
 		battleScreen = new BattleScreen(testNPC, pc, testBS);
@@ -87,7 +93,9 @@ public class MapController implements InputProcessor {
 //				System.out.println(String.valueOf(pc.xCor) + " " + String.valueOf(pc.yCor));
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
-					startBattle();
+					if(temp.occupant instanceof Monster) {
+						startBattle();	
+					}
 					break;
 				}
 				if(!temp.blocking) 
@@ -99,7 +107,9 @@ public class MapController implements InputProcessor {
 //				temp = terrain.get(pc.xCor+xOffset).get(pc.yCor+yOffset+1);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
-					startBattle();
+					if(temp.occupant instanceof Monster) {
+						startBattle();	
+					}
 					break;
 				}
 				if(!temp.blocking) 
@@ -111,7 +121,9 @@ public class MapController implements InputProcessor {
 //				temp = terrain.get(pc.xCor+xOffset-1).get(pc.yCor+yOffset);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
-					startBattle();
+					if(temp.occupant instanceof Monster) {
+						startBattle();	
+					}
 					break;
 				}
 				if(!temp.blocking) 
@@ -123,7 +135,9 @@ public class MapController implements InputProcessor {
 //				temp = terrain.get(pc.xCor+xOffset+1).get(pc.yCor+yOffset);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
-					startBattle();
+					if(temp.occupant instanceof Monster) {
+						startBattle();	
+					}
 					break;
 				}
 				if(!temp.blocking) 
@@ -165,6 +179,19 @@ public class MapController implements InputProcessor {
 	
 	public void nextMap() {
 		
+	}
+	
+	public void moveNPC(NPC npc, int x, int y) {
+		if(npc == null) return;
+		int ox = npc.xCor;
+		int oy = npc.yCor;
+		grid.setSpace(ox, oy, 0);
+		npc.move(x, y);
+		grid.setSpace(ox+x, oy+y, 1);
+		Terrain temp = terrain.get(npc.xCor).get(npc.yCor);
+		if(!temp.occupied) {
+			temp.setOccupant(npc);
+		}
 	}
 	
 	public class MapLoader {

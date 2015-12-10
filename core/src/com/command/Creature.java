@@ -6,6 +6,7 @@ public class Creature extends DrawableObject {
 	
 	public String name;
 	public Array<Item> inventory;
+	public int health;
 
 	public Creature(int x, int y) {
 		super(x, y);
