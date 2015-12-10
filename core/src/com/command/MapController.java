@@ -11,6 +11,7 @@ import com.badlogic.gdx.utils.Array;
 public class MapController implements InputProcessor {
 
 	public Grid grid;
+	public Array<Item> items;
 	public Array<Creature> creatures;
 	public Array<Array<Terrain>> terrain;
 	public Array<MapInstance> maps;
@@ -27,10 +28,13 @@ public class MapController implements InputProcessor {
 		mapLoader 	= new MapLoader();
 		grid      	= new Grid(Vals.GRID_X_COUNT, Vals.GRID_Y_COUNT);
 		creatures 	= new Array<Creature>();
+		items 		= new Array<Item>();
 		pc 			= new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2);
 		NPC testNPC = new NPC(7,7);
 		creatures.add(testNPC);
 		grid.setSpace(7, 7, 1);
+		Item testItem = new Item(4, 10, new Texture("item_test.tga"));
+		items.add(testItem);
 		maps = new Array<MapInstance>();
 		maps.add(new MapInstance(mapIndex++, MapData.translate(MapData.randomMap())));
 		mapLoader.setMapData(maps.get(currentMap).mapData);
@@ -53,6 +57,9 @@ public class MapController implements InputProcessor {
 			}
 			for(Creature creature: creatures) {
 				creature.draw(batch);
+			}
+			for(Item item: items) {
+				item.draw(batch);
 			}
 			pc.draw(batch);	
 		}
@@ -122,6 +129,13 @@ public class MapController implements InputProcessor {
 				if(!temp.blocking) 
 					pc.move(-1,0);
 				break;
+			case Keys.E:
+				for(Item item: items) {
+					if(item.xCor == pc.xCor && item.yCor == pc.yCor) {
+						pc.pickUpItem(item);
+						items.removeValue(item, true);
+					}
+				}
 		}
 	}
 	
@@ -212,7 +226,7 @@ public class MapController implements InputProcessor {
 							 temp.add(nt);
 							 break;
 						 case 'e':
-							 nt = new Terrain(xT, yT, regions.get(4), false, true);
+							 nt = new Terrain(xT, yT, regions.get(4), false, true, Terrain.Direction.NONE);
 							 nt.setType(type);
 							 temp.add(nt);
 							 break;

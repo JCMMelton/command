@@ -4,9 +4,10 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Terrain extends DrawableObject {
 	
-	public boolean 	isExit = false;
-	public char 	facing = 'n';
-	public char 	type;
+	public 	boolean 	isExit = false;
+	enum 	Direction 	{NORTH, SOUTH, EAST, WEST, NONE};
+	public 	Direction 	facing = Direction.NONE;
+	public 	char 		type;
 	
 	public Terrain(int x, int y) {
 		super(x, y);
@@ -25,15 +26,17 @@ public class Terrain extends DrawableObject {
 		setRegion(region);
 	}
 	
-	public Terrain(int x, int y, TextureRegion region, boolean blocking, boolean exit) {
+	public Terrain(int x, int y, TextureRegion region, boolean blocking, boolean exit, Direction facing) {
 		super(x, y);
 		this.isExit = exit;
 		this.blocking = blocking;
 		setDimentions(Vals.GRID_SIZE, Vals.GRID_SIZE);
+		this.facing = facing;
+//		region.rotate()
 		setRegion(region);
 	}
 	
-	public void setFacing(char facing) {
+	public void setFacing(Direction facing) {
 		this.facing = facing;
 	}
 	

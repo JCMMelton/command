@@ -11,7 +11,7 @@ public class MapInstance {
 	}
 	
 	public MapInstance(int id, String[] mapData) {
-		this.id 	 = id;
+		this(id);
 		this.mapData = mapData;
 	}
 	
