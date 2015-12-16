@@ -2,6 +2,7 @@ package com.command;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.utils.Array;
 
 public class BattleScreen {
@@ -9,11 +10,13 @@ public class BattleScreen {
 	public Array<TextureRegion> backgroundLayers;
 	public NPC    npc;
 	public Player pc;
+//	public Stage  stage;
 	
 	
 	public BattleScreen(NPC npc, Player pc) {
 		this.npc = npc;
 		this.pc  = pc;
+//		stage = new Stage();
 	}
 
 	public BattleScreen(NPC npc, Player pc, Array<TextureRegion> bgLayers) {

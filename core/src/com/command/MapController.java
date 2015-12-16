@@ -3,9 +3,17 @@ package com.command;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.Input.Keys;
+import com.badlogic.gdx.InputMultiplexer;
+import com.badlogic.gdx.graphics.Color;
+import com.badlogic.gdx.graphics.Pixmap;
 import com.badlogic.gdx.graphics.Texture;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureRegion;
+import com.badlogic.gdx.scenes.scene2d.Actor;
+import com.badlogic.gdx.scenes.scene2d.ui.List;
+import com.badlogic.gdx.scenes.scene2d.ui.ScrollPane;
+import com.badlogic.gdx.scenes.scene2d.utils.TextureRegionDrawable;
 import com.badlogic.gdx.utils.Array;
 
 public class MapController implements InputProcessor {
@@ -22,11 +30,18 @@ public class MapController implements InputProcessor {
 	public int xOffset = 0;
 	public int yOffset = 0;
 	public BattleScreen battleScreen;
-	public boolean battle = false;
+	public boolean battle  = false;
+	public boolean showInv = false;
+	public BitmapFont font;
+	public ScrollPane playerInv;
+	public InputMultiplexer iomux;
 	
 	public MapController() {
+		iomux = new InputMultiplexer();
+		
+		font 		= new BitmapFont();
 		mapLoader 	= new MapLoader();
-		maps = new Array<MapInstance>();
+		maps 		= new Array<MapInstance>();
 		maps.add(new MapInstance(mapIndex++, MapData.translate(MapData.randomMap())));
 		mapLoader.setMapData(maps.get(currentMap).mapData);
 		terrain   = mapLoader.generateTerrain();
@@ -34,7 +49,8 @@ public class MapController implements InputProcessor {
 		grid      	= new Grid(Vals.GRID_X_COUNT, Vals.GRID_Y_COUNT);
 		creatures 	= new Array<Creature>();
 		items 		= new Array<Item>();
-		pc 			= new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2);
+		pc 			= new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2, iomux);
+//		playerInv   = getInventory();
 		
 		Monster testNPC = new Monster(7,7);
 		moveNPC(testNPC, 1, 1);
@@ -43,12 +59,20 @@ public class MapController implements InputProcessor {
 		moveNPC(nonOgre, 1, -1);
 		creatures.add(nonOgre);
 		
-		Item testItem = new Item(4, 10, new Texture("item_test.tga"));
+		Item testItem = new Item(4, 10, new Texture("item_test.tga"), Item.Slot.HAND);
 		items.add(testItem);
+		
+		Item testItem2 = new Item(12, 8, new Texture("items_01.tga"), Item.Slot.LEGS);
+		testItem2.name = "item 2";
+		testItem2.setRegion(3, 0);
+		items.add(testItem2);
+		
 		Array<TextureRegion> testBS = new Array<TextureRegion>();
 		testBS.add(new TextureRegion(new Texture("battle_test.tga"), 0, 0, 800, 600));
 		battleScreen = new BattleScreen(testNPC, pc, testBS);
-		Gdx.input.setInputProcessor(this);
+		
+		iomux.addProcessor(this);
+		Gdx.input.setInputProcessor(iomux);
 	}
 	
 	public void draw(SpriteBatch batch) {
@@ -69,7 +93,25 @@ public class MapController implements InputProcessor {
 			}
 			pc.draw(batch);	
 		}
+		if(showInv) {
+//			playerInv.draw(batch, 1.0f);
+			pc.charScreen.draw(batch);
+		}
 		batch.end();
+	}
+	
+	public ScrollPane getInventory() {
+		Pixmap  			  pm   = new Pixmap(64, 64, Pixmap.Format.RGBA8888);
+		pm.setColor(Color.WHITE);
+		pm.fillRectangle(0, 0, 64, 64);
+		Texture				  tex  = new Texture(pm);
+		TextureRegion 		  tr   = new TextureRegion(tex, 0, 0, 64, 64);
+		TextureRegionDrawable trd  = new TextureRegionDrawable(tr);
+		List<Item> 			  list = new List<Item>(new List.ListStyle(font, Color.BLACK, Color.BLUE, trd));
+		list.setItems(pc.inventory);
+		list.setSelected(pc.inventory.get(0));
+		ScrollPane 			  sp   = new ScrollPane(list);
+		return sp;
 	}
 	
 	public void battleInput(int keycode) {
@@ -87,10 +129,6 @@ public class MapController implements InputProcessor {
 			case Keys.UP:
 			case Keys.W:
 				temp = terrain.get(pc.xCor).get(pc.yCor+1);
-//				temp = terrain.get(pc.xCor+xOffset).get(pc.yCor+yOffset-1);
-//				System.out.println(String.valueOf(temp.blocking) + " " + String.valueOf(temp.type));
-//				System.out.println(String.valueOf(temp.xCor) + " " + String.valueOf(temp.yCor));
-//				System.out.println(String.valueOf(pc.xCor) + " " + String.valueOf(pc.yCor));
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
 					if(temp.occupant instanceof Monster) {
@@ -104,7 +142,6 @@ public class MapController implements InputProcessor {
 			case Keys.DOWN:
 			case Keys.S:
 				temp = terrain.get(pc.xCor).get(pc.yCor-1);
-//				temp = terrain.get(pc.xCor+xOffset).get(pc.yCor+yOffset+1);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
 					if(temp.occupant instanceof Monster) {
@@ -118,7 +155,6 @@ public class MapController implements InputProcessor {
 			case Keys.RIGHT:
 			case Keys.D:
 				temp = terrain.get(pc.xCor+1).get(pc.yCor);
-//				temp = terrain.get(pc.xCor+xOffset-1).get(pc.yCor+yOffset);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
 					if(temp.occupant instanceof Monster) {
@@ -132,7 +168,6 @@ public class MapController implements InputProcessor {
 			case Keys.LEFT:
 			case Keys.A:
 				temp = terrain.get(pc.xCor-1).get(pc.yCor);
-//				temp = terrain.get(pc.xCor+xOffset+1).get(pc.yCor+yOffset);
 				if(temp.isExit) break;
 				if(grid.isOcc(temp.xCor, temp.yCor)){ 
 					if(temp.occupant instanceof Monster) {
@@ -143,11 +178,18 @@ public class MapController implements InputProcessor {
 				if(!temp.blocking) 
 					pc.move(-1,0);
 				break;
+			case Keys.C:
+			case Keys.I:
+				showInv = !showInv;
+				break;
 			case Keys.E:
 				for(Item item: items) {
 					if(item.xCor == pc.xCor && item.yCor == pc.yCor) {
 						pc.pickUpItem(item);
 						items.removeValue(item, true);
+//						pc.charScreen.updateInv(pc.inventory);
+						break;
+//						getInventory();
 					}
 				}
 		}
@@ -195,6 +237,7 @@ public class MapController implements InputProcessor {
 	}
 	
 	public class MapLoader {
+		
 		public String path = "terrain_02.tga";
 		public Texture t;
 		public Array<TextureRegion>  regions;
@@ -279,7 +322,7 @@ public class MapController implements InputProcessor {
 
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button) {
-		// TODO Auto-generated method stub
+//		System.out.println(String.valueOf(screenX) + " " + String.valueOf(screenY));
 		return false;
 	}
 
@@ -297,7 +340,7 @@ public class MapController implements InputProcessor {
 
 	@Override
 	public boolean mouseMoved(int screenX, int screenY) {
-		// TODO Auto-generated method stub
+//		System.out.println(String.valueOf(screenX) + " " + String.valueOf(screenY));
 		return false;
 	}
 

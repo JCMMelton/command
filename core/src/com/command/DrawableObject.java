@@ -47,7 +47,7 @@ public class DrawableObject extends GameObject {
 	}
 	
 	public void setRegion(int x, int y) {
-		textureRegion = new TextureRegion(texture, width*x, height*y);
+		textureRegion = new TextureRegion(texture, width*x, height*y, width, height);
 	}
 	
 	public void setRegion(TextureRegion reg) {

@@ -5,11 +5,19 @@ import com.badlogic.gdx.graphics.g2d.TextureRegion;
 
 public class Item extends DrawableObject {
 
-	enum 	Slot {HEAD, BODY, LEGS, FEET, HAND, NONE};
-	public 	Slot slot = null;
-	public  int  inventoryIndex;
-	public  int  id;
-	public  int  handsNeeded;
+	enum   Slot   {HEAD, BODY, LEGS, FEET, HAND, NONE};
+	public Slot   slot = null;
+	public int    inventoryIndex;
+	public int    id;
+	public int    handsNeeded;
+	public String name = "item";
+	public int    attackPower;
+	public int    defence;
+	public int 	  speed;
+	public int    strength;
+	public int    dexterity;
+	public int    endurance;
+	
 	
 	public Item(int x, int y) {
 		super(x, y);
@@ -18,7 +26,8 @@ public class Item extends DrawableObject {
 	public Item(int x, int y, Texture texture) {
 		this(x, y);
 		this.texture = texture;
-		this.textureRegion = new TextureRegion(texture, 0, 0, 32, 32);
+		width = height = Vals.GRID_SIZE;
+		this.textureRegion = new TextureRegion(texture, 0, 0, width, height);
 	}
 	
 	public Item(int x, int y, Texture texture, Slot slot) {

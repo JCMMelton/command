@@ -28,29 +28,21 @@ public class CommandGame extends ApplicationAdapter implements ApplicationListen
 	boolean debugMode = false;
 	public Grid grid;
 	public MapController map;
+	public PlayerManagement pcm;
 	
 	@Override
 	public void create () {
+		Player pc = new Player(Vals.GRID_X_COUNT/2, Vals.GRID_Y_COUNT/2);
+		pcm = new PlayerManagement(pc);
 //		stage 	 = new Stage();
-		map      = new MapController();
+//		map      = new MapController();
 		font  	 = new BitmapFont();
 		rendr 	 = new ShapeRenderer();
 		testGrid = new Array<Integer>();
 		peeps 	 = new Array<Person>();
 		team1 	 = new Array<Person>();
 		team2 	 = new Array<Person>();
-//		int limit = 15;
-//		int space = 35;
-//		for(int i = 0; i < limit; i++) {
-//			Person p1 = new Person(1, Vals.SCREEN_WIDTH/2 + (-1*limit/2*space) + i*space, Vals.SCREEN_HEIGHT*1/4);
-////			Person p2 = new Person(2, Vals.SCREEN_WIDTH/2 + (-1*limit/2*space) + i*space, Vals.SCREEN_HEIGHT*3/4);
-//			peeps.add(p1);
-////			peeps.add(p2);
-//			team1.add(p1);
-////			team2.add(p2);
-//			stage.addActor(p1);
-//		}
-		batch = new SpriteBatch();
+		batch    = new SpriteBatch();
 	}
 
 	@Override
@@ -58,44 +50,8 @@ public class CommandGame extends ApplicationAdapter implements ApplicationListen
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		float deltaTime = Gdx.graphics.getDeltaTime();
-		map.draw(batch);
-//		for(Person peep: team1) {
-//			for(Person enemy: team2) {
-//				peep.update(enemy, deltaTime);
-//				enemy.update(peep, deltaTime);
-//				if(debugMode) debug(peep, enemy);
-////					peep.moveTowards(enemy);
-//				
-//			}
-//		}
-//		for(Person peep: peeps) {
-//			peep.update(peep, deltaTime);
-//		}
-//		stage.act(deltaTime);
-//		stage.draw();
-		
-//		grid.draw(rendr);		
-//		rendr.begin(ShapeType.Line);
-//		rendr.setColor(Color.BLUE);
-//		for(Person p: team1) {
-//			rendr.circle(p.xPos, p.yPos, p.renderRadius);
-//			if(debugMode) {
-//				rendr.circle(p.xPos, p.yPos, p.visionRadius);
-//				rendr.circle(p.xPos, p.yPos, p.fightRadius);
-//			}
-//		}
-//		rendr.setColor(Color.RED);
-//		for(Person p: team2) {
-//			rendr.circle(p.xPos, p.yPos, p.renderRadius);
-//			if(debugMode) {
-//				rendr.circle(p.xPos, p.yPos, p.visionRadius);
-//				rendr.circle(p.xPos, p.yPos, p.fightRadius);
-//			}
-//		}
-//		rendr.end();
-//		batch.begin();
-////		batch.draw(img, 0, 0);
-//		batch.end();
+		pcm.render(deltaTime);
+//		map.draw(batch);
 	}
 	
 	public void debug(Person peep, Person enemy) {
